@@ -1,4 +1,3 @@
-require 'reloader/sse'
 class BrowserController < ApplicationController
   include ActionController::Live
 
@@ -6,7 +5,7 @@ class BrowserController < ApplicationController
     #SSE expects the 'text/event-stream' content type
     response.headers['Content-Type'] = 'text/event-stream'
 
-    sse = Reloader::SSE.new(response.stream)
+    sse = SSE.new(response.stream)
 
     begin
 
