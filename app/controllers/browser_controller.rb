@@ -9,10 +9,18 @@ class BrowserController < ApplicationController
     sse = Reloader::SSE.new(response.stream)
 
     begin
-      loop do
-        sse.write({:time => Time.now})
-        sleep 1
+
+      directories = [
+        File.join(Rails.root, 'app', 'assets'),
+        File.join(Rails.root, 'app', 'views'),
+      ]
+      listener = Listen.to(File.join(Rails.root, 'app', 'assets')) do |modified, added, removed|
+        sse.write({ :modified => modified, :added => added, :removed => removed }, :event => 'refresh')
       end
+
+      listener.start
+      sleep
+
     rescue IOError
       # When the client disconnects, we'll get an IOError on write
     ensure
